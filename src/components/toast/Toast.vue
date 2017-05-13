@@ -105,19 +105,23 @@ export default {
     __show () {
       Events.$emit('app:toast', this.stack[0].html)
 
-      this.timer = setTimeout(() => {
-        if (this.stack.length > 0) {
-          this.dismiss()
-        }
-        else {
-          this.inTransition = false
-        }
-      }, transitionDuration + (this.stack[0].timeout || displayDuration))
+      if (this.stack[0].timeout > 0) {
+        this.timer = setTimeout(() => {
+          if (this.stack.length > 0) {
+            this.dismiss()
+          }
+          else {
+            this.inTransition = false
+          }
+        }, transitionDuration + (this.stack[0].timeout || displayDuration))
+      }
     },
     dismiss (done) {
       this.active = false
-      clearTimeout(this.timer)
-      this.timer = null
+      if (this.stack[0].timeout > 0) {
+        clearTimeout(this.timer)
+        this.timer = null
+      }
 
       setTimeout(() => {
         if (typeof this.stack[0].onDismiss === 'function') {
